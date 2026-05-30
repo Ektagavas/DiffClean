@@ -34,7 +34,7 @@ pip install git+https://github.com/openai/CLIP.git
 
 ## Pretrained models and datasets
 
-- The model checkpoints required for the execution of DiffClean can be requested [here](https://drive.google.com/file/d/14nFKKeZaTVGA4PaIPfdmy7Mr1GuRXF8n/view?usp=drive_link). (Please use your official email id in the access request.) Please unzip the file and move the checkpoints to appropriate locations as shown below.
+- The model checkpoints required for the execution of DiffClean can be requested [here](https://forms.gle/VHcW9dNAhPyqAELc7). (Please use your official email id in the access request.) Please unzip the file and move the checkpoints to appropriate locations as shown below.
 
 ```shell
 mkdir pretrained
