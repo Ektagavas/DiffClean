@@ -52,7 +52,7 @@ def process_image(image, modeltype, estimate_age):
 
 
 demo = gr.Interface(process_image, [gr.Image(type='filepath'),gr.Dropdown(
-            ["ssr","clip"], label="Model", info="Choose Diffam model"
+            ["ssr","clip"], label="Model", info="Choose DiffClean model"
         ), "checkbox"], "image")
     
 if __name__ == "__main__":

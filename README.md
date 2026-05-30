@@ -94,7 +94,7 @@ Please note that for reference-based baselines like BeautyGAN, PSGAN++, LADN, we
 SSRNet-Age Loss
 
 ```shell
-python main.py --makeup_removal --config UTK.yml --exp ./runs/diffclean_ssr --do_train 1 --do_test 1 \
+python main.py --makeup_removal --config UTK.yml --exp ./runs/diffclean_ssr --do_train 1 --do_test 1 --age_loss_type "ssr" \
 --n_train_img 200 --n_test_img 100 --n_iter 5 --t_0 80 --n_inv_step 40 --n_train_step 6 --n_test_step 6 \
 --lr_clip_finetune 4e-6 --sch_gamma 1.1 --align_face 1 --schedule cosine --MR_age_loss_w 0.5 \
 --model_path checkpoint/diffclean_ssr_age.pth
@@ -103,7 +103,7 @@ python main.py --makeup_removal --config UTK.yml --exp ./runs/diffclean_ssr --do
 CLIP-Age Loss
 
 ```shell
-python main.py --makeup_removal --config UTK.yml --exp ./runs/diffclean_clip --do_train 1 --do_test 1 \
+python main.py --makeup_removal --config UTK.yml --exp ./runs/diffclean_clip --do_train 1 --do_test 1 --age_loss_type "clip" \
 --n_train_img 200 --n_test_img 100 --n_iter 5 --t_0 80 --n_inv_step 40 --n_train_step 6 --n_test_step 6 \
 --lr_clip_finetune 4e-6 --sch_gamma 1.1 --align_face 1 --schedule cosine --MR_age_loss_w 5 \
 --model_path checkpoint/diffclean_clip_age.pth

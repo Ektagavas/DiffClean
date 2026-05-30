@@ -22,7 +22,7 @@ from utils.align_utils import run_alignment
 from utils.data_utils import *
 
 
-class DiffAM_MR(object):
+class DiffClean_Clip(object):
     def __init__(self, args, config, device=None):
         self.args = args
         self.config = config

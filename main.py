@@ -7,20 +7,16 @@ import sys
 import os
 import torch
 import numpy as np
-from makeup_transfer import DiffAM_MT
-from makeup_removal import DiffAM_MR
+from makeup_removal_ssr import DiffClean_SSR
+from makeup_removal_clip import DiffClean_Clip
 
 def parse_args_and_config():
     parser = argparse.ArgumentParser(description=globals()['__doc__'])
 
     # Mode
     parser.add_argument('--makeup_transfer', action='store_true')
-    parser.add_argument('--makeup_removal', action='store_true')
-    parser.add_argument('--edit_one_image_MT', action='store_true')
     parser.add_argument('--edit_one_image_MR', action='store_true')
     parser.add_argument('--edit_dir_MR', action='store_true')
-    parser.add_argument('--edit_dir_MT', action='store_true')
-    parser.add_argument('--edit_test_MR', action='store_true')
 
     # Default
     parser.add_argument('--config', type=str, required=True, help='Path to the config file')
@@ -60,16 +56,7 @@ def parse_args_and_config():
 
 
     # Loss & Optimization
-    parser.add_argument('--MT_iter_without_adv', type=int, default=3, help='iters without adv loss')
-    parser.add_argument('--MT_1_dir_loss_w', type=int, default=0.3, help='Weights of makeup direction loss in MT stage 1')
-    parser.add_argument('--MT_2_dir_loss_w', type=int, default=0.5, help='Weights of makeup direction loss in MT stage 2')
-    parser.add_argument('--MT_1_dis_loss_w', type=int, default=1, help='Weights of makeup distance loss')
-    parser.add_argument('--MT_2_dis_loss_w', type=int, default=1.6, help='Weights of makeup distance loss')
-    parser.add_argument('--MT_1_l1_loss_w', type=int, default=3, help='Weights of L1 loss in MT stage 1')
-    parser.add_argument('--MT_2_l1_loss_w', type=int, default=5, help='Weights of L1 loss in MT stage 2')
-    parser.add_argument('--MT_lpips_loss_w', type=int, default=10, help='Weights of LPIPS loss in MT')
-    parser.add_argument('--MT_adv_loss_w', type=float, default=0.5, help='Weights of adv loss')
-    
+    parser.add_argument('--age_loss_type', type=str, default='clip', choices=['clip', 'ssr'], help='Loss type for finetuning. clip or ssr')
     parser.add_argument('--MR_clip_loss_w', type=int, default=5, help='Weights of CLIP loss in MR')
     parser.add_argument('--MR_l1_loss_w', type=float, default=2, help='Weights of L1 loss in MR')
     parser.add_argument('--MR_id_loss_w', type=float, default=1, help='Weights of ID loss in MR')
@@ -83,11 +70,6 @@ def parse_args_and_config():
     parser.add_argument('--scheduler', type=int, default=1, help='Whether to increase the learning rate')
     parser.add_argument('--sch_gamma', type=float, default=1.3, help='Scheduler gamma')
 
-    # Attack & Makeup
-    parser.add_argument('--target_img', type=int, default=1, help='Target identities: 0, 1, 2, 3')
-    parser.add_argument('--target_model', type=int, default=2, help='Target model for black-box attack. 0:ir152, 1:irse50, 2:mobile_face, 3:facenet')
-    parser.add_argument('--ref_img', type=str, default='XMY-060', help='Reference image')
-    
     args = parser.parse_args()
 
     # parse config file
@@ -95,20 +77,13 @@ def parse_args_and_config():
         config = yaml.safe_load(f)
     new_config = dict2namespace(config)
 
-    if args.makeup_transfer:
-        args.exp = args.exp + f'_MT_{new_config.data.category}_{args.ref_img}_t{args.t_0}_ninv{args.n_inv_step}_ngen{args.n_train_step}_dis{args.MT_1_dis_loss_w}_dir{args.MT_1_dir_loss_w}_lr{args.lr_clip_finetune}'
-    elif args.makeup_removal:
-        args.exp = args.exp + f'_MR_{new_config.data.category}_t{args.t_0}_ninv{args.n_inv_step}_ngen{args.n_train_step}_id{args.MR_id_loss_w}_age{args.MR_age_loss_w}_l1{args.MR_l1_loss_w}_lr{args.lr_clip_finetune}'
-    elif args.edit_one_image_MT:
-        args.exp = args.exp + f'_E1_MT_t{args.t_0}_{new_config.data.category}_{args.img_path.split("/")[-1].split(".")[0]}_t{args.t_0}_ninv{args.n_inv_step}_{os.path.split(args.model_path)[-1].replace(".pth", "")}'
-    elif args.edit_one_image_MR:
-        args.exp = args.exp + f'_E1_MR_t{args.t_0}_{new_config.data.category}_{args.img_path.split("/")[-1].split(".")[0]}_t{args.t_0}_ninv{args.n_inv_step}_{os.path.split(args.model_path)[-1].replace(".pth", "")}'
-    elif args.edit_dir_MR:
-        args.exp = args.exp + f'_E1_MR_t{args.t_0}_{new_config.data.category}_t{args.t_0}_ninv{args.n_inv_step}_{os.path.split(args.model_path)[-1].replace(".pth", "")}'
-    elif args.edit_dir_MT:
-         args.exp = args.exp + f'_E1_MT_t{args.t_0}_{new_config.data.category}_t{args.t_0}_ninv{args.n_inv_step}_{os.path.split(args.model_path)[-1].replace(".pth", "")}'
-    elif args.edit_test_MR:
-         args.exp = args.exp + f'_E1_MT_t{args.t_0}_{new_config.data.category}_t{args.t_0}_ninv{args.n_inv_step}_{os.path.split(args.model_path)[-1].replace(".pth", "")}'
+    if args.do_train == 1:
+        args.exp = args.exp + f'_MR_{new_config.data.category}_{args.age_loss_type}_t{args.t_0}_ninv{args.n_inv_step}_ngen{args.n_train_step}_id{args.MR_id_loss_w}_age{args.MR_age_loss_w}_l1{args.MR_l1_loss_w}_lr{args.lr_clip_finetune}'
+    else:
+        if args.edit_one_image_MR:
+            args.exp = args.exp + f'_E1_MR_t{args.t_0}_{new_config.data.category}_{args.img_path.split("/")[-1].split(".")[0]}_t{args.t_0}_ninv{args.n_inv_step}_{os.path.split(args.model_path)[-1].replace(".pth", "")}'
+        else:
+            args.exp = args.exp + f'_E1_MR_t{args.t_0}_{new_config.data.category}_t{args.t_0}_ninv{args.n_inv_step}_{os.path.split(args.model_path)[-1].replace(".pth", "")}'
         
     args.n_precomp_img = args.n_train_img
 
@@ -189,27 +164,16 @@ def main():
 
     start_time = time.time()
     try:
-        if args.makeup_transfer:
-            runner = DiffAM_MT(args, config)
+        if args.age_loss_type == 'ssr': 
+            runner = DiffClean_SSR(args, config)
+        else: 
+            runner = DiffClean_Clip(args, config)
+        if args.do_train == 1: 
             runner.clip_finetune()
-        elif args.makeup_removal:
-            runner = DiffAM_MR(args, config)
-            runner.clip_finetune()
-        elif args.edit_one_image_MT:
-            runner = DiffAM_MT(args, config)
-            runner.edit_one_image()
         elif args.edit_one_image_MR:
-            runner = DiffAM_MR(args, config)
             runner.edit_one_image()
         elif args.edit_dir_MR:
-            runner = DiffAM_MR(args, config)
             runner.edit_dir_images()
-        elif args.edit_dir_MT:
-            runner = DiffAM_MT(args, config)
-            runner.edit_dir_images()
-        elif args.edit_test_MR:
-            runner = DiffAM_MR(args, config)
-            runner.eval_test_set()
         else:
             print('Choose one mode!')
             raise ValueError
