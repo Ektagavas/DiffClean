@@ -1,7 +1,7 @@
 # DiffClean: Diffusion-based Makeup Removal for Accurate Age Estimation
 <i>Ekta Gavas, Sudipta Banerjee, Chinmay Hegde and Nasir Memon</i>
 
-[![arXiv](https://img.shields.io/badge/arXiv-2405.09882-red)](https://arxiv.org/abs/2507.13292)
+[![paper](https://img.shields.io/badge/BIOM2026-cvpr2026w-blue)]([[https://arxiv.org/abs/2507.13292](https://openaccess.thecvf.com/content/CVPR2026W/BIOM2026/html/Gavas_DiffClean_Diffusion-based_Makeup_Removal_for_Accurate_Age_Estimation_CVPRW_2026_paper.html)](https://openaccess.thecvf.com/content/CVPR2026W/BIOM2026/html/Gavas_DiffClean_Diffusion-based_Makeup_Removal_for_Accurate_Age_Estimation_CVPRW_2026_paper.html))
 
 Official implementation of paper "DiffClean: Diffusion-based Makeup Removal for Accurate Age Estimation".
 
