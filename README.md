@@ -34,7 +34,7 @@ pip install git+https://github.com/openai/CLIP.git
 
 ## Pretrained models and datasets
 
-- The model checkpoints required for the execution of DiffClean can be requested [here](https://forms.gle/VHcW9dNAhPyqAELc7). (Please use your official university/college email id in the access request.) Please unzip the file and move the checkpoints to appropriate locations as shown below.
+- The model checkpoints required for the execution of DiffClean can be requested [here](https://forms.gle/VHcW9dNAhPyqAELc7). (Note: Please use your official university/college email id in the access request.) Please unzip the file and move the checkpoints to appropriate locations as shown below.
 
 ```shell
 mkdir pretrained
@@ -128,11 +128,13 @@ Note: To use age estimation feature in the Gradio UI, MiVOLO must be set up firs
  This code is provided for academic and research purposes in connection with the paper "DiffClean: Diffusion-based Makeup Removal for Accurate Age Estimation". Commercial use is not intended or supported. Please cite the paper when using this code.
 
 ```bibtex
-@article{gavas2025diffclean,
-  title={DiffClean: Diffusion-based Makeup Removal for Accurate Age Estimation},
-  author={Gavas, Ekta Balkrishna and Banerjee, Sudipta and Hegde, Chinmay and Memon, Nasir},
-  journal={arXiv preprint arXiv:2507.13292},
-  year={2025}
+@InProceedings{Gavas_2026_CVPR,
+    author    = {Gavas, Ekta and Banerjee, Sudipta and Hegde, Chinmay and Memon, Nasir},
+    title     = {DiffClean: Diffusion-based Makeup Removal for Accurate Age Estimation},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops},
+    month     = {June},
+    year      = {2026},
+    pages     = {1516-1526}
 }
 ```
 
